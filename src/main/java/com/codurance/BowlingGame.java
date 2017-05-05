@@ -9,7 +9,7 @@ class BowlingGame {
     private static final int NUMBER_OF_TURNS = 10;
 
     int getScore(String game) {
-        TurnsList turns = TurnsList.of(game);
+        TurnsList turns = TurnsListBuilder.of(game);
         return getNormalTurnsScore(turns) + getBonusScore(turns);
     }
 
