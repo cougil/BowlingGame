@@ -1,5 +1,10 @@
 package com.codurance;
 
+import com.codurance.turn.NormalTurn;
+import com.codurance.turn.SpareTurn;
+import com.codurance.turn.StrikeTurn;
+import com.codurance.turn.Turn;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,14 +44,12 @@ class TurnsList {
             char[] tries = turn.toCharArray();
 
             List<Integer> balls = new ArrayList<>();
-            balls.add(parsePosition0(tries[0]));
-            balls.add(parsePosition1(balls.get(0), tries[1]));
+            balls.add(parseFirstPosition(tries[0]));
+            balls.add(parseSecondPosition(balls.get(0), tries[1]));
 
-            TurnType turnType = TurnType.Numeric;
-            if (tries[0] == Symbols.STRIKE) turnType = TurnType.Strike;
-            if (tries[1] == Symbols.SPARE) turnType = TurnType.Spare;
-
-            return new Turn(balls, turnType);
+            if (tries[0] == Symbols.STRIKE) return new StrikeTurn(balls);
+            if (tries[1] == Symbols.SPARE) return new SpareTurn(balls);
+            return new NormalTurn(balls);
         };
     }
 
@@ -59,12 +62,12 @@ class TurnsList {
         };
     }
 
-    private static int parsePosition0(char position) {
+    private static int parseFirstPosition(char position) {
         return position == Symbols.STRIKE ? MAX_SCORE : getNumericValue(position);
     }
 
-    private static int parsePosition1(int previousValue, char position) {
-        return position == Symbols.SPARE ? MAX_SCORE - previousValue : parsePosition0(position);
+    private static int parseSecondPosition(int previousValue, char position) {
+        return position == Symbols.SPARE ? MAX_SCORE - previousValue : parseFirstPosition(position);
     }
 
     private static int getNumericValue(char position) {

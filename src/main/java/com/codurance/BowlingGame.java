@@ -1,5 +1,7 @@
 package com.codurance;
 
+import com.codurance.turn.Turn;
+
 import java.util.stream.IntStream;
 
 class BowlingGame {
@@ -24,24 +26,23 @@ class BowlingGame {
 
     private int getTurnScore(TurnsList turns, int turnNumber) {
         Turn turn = turns.getTurn(turnNumber);
-        int score = turn.getTotalScore();
-        if (TurnType.Spare == turn.getType() || TurnType.Strike == turn.getType() ) {
-            int additional = calculateAdditionalScore(turns, turnNumber + 1, turn.getType());
-            score += additional;
-        }
-        return score;
+        return turn.getTotalScore() + calculateAdditionalScore(turns, turnNumber+1,
+                turn.additionalBalls());
     }
 
-    private int calculateAdditionalScore(TurnsList turns, int turnNumber, TurnType turnType) {
-        if (turnNumber >= NUMBER_OF_TURNS) return 0;
+    private int calculateAdditionalScore(TurnsList turns, int turnNumber, AdditionalBalls additionalBalls) {
+        if (turnNumber >= NUMBER_OF_TURNS || AdditionalBalls.NONE == additionalBalls) {
+            return 0;
+        }
         Turn turn = turns.getTurn(turnNumber);
-        if (TurnType.Spare == turnType) {
+        if (AdditionalBalls.SINGLE == additionalBalls) {
             return turn.getFirstBallScore();
         }
         if (turn.ballsPlayed() == 2) {
             return turn.getTotalScore();
         }
-        return turn.getFirstBallScore() + calculateAdditionalScore(turns, turnNumber+1, TurnType.Spare);
+        return turn.getFirstBallScore() + calculateAdditionalScore(turns, turnNumber+1,
+                additionalBalls.decrement());
     }
 
 }
